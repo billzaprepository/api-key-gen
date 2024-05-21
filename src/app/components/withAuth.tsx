@@ -22,6 +22,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
     return <WrappedComponent {...props} />;
   };
 
+  // Adicionando o display name
   ComponentWithAuth.displayName = `withAuth(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
 
   return ComponentWithAuth;
