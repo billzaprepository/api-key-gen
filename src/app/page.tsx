@@ -14,9 +14,11 @@ interface Usuario {
 
 const Home = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [filteredUsuarios, setFilteredUsuarios] = useState<Usuario[]>([]);
   const [newUsuario, setNewUsuario] = useState('');
   const [newDataValidade, setNewDataValidade] = useState('');
   const [editUsuario, setEditUsuario] = useState<Usuario | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchUsuarios();
@@ -26,9 +28,18 @@ const Home = () => {
     try {
       const response = await axios.get('/api/usuarios');
       setUsuarios(response.data);
+      setFilteredUsuarios(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    const filtered = usuarios.filter(usuario =>
+      usuario.usuario.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredUsuarios(filtered);
   };
 
   const handleAddUsuario = async () => {
@@ -126,8 +137,18 @@ const Home = () => {
         </button>
       </div>
 
+      <div className="w-full max-w-md bg-gray-800 shadow-md rounded-lg p-4 mb-8">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearch}
+          placeholder="Buscar por nome do usuário"
+          className="w-full p-2 mb-4 border border-gray-700 rounded-md bg-gray-700 text-gray-100"
+        />
+      </div>
+
       <ul className="w-full max-w-2xl bg-gray-800 shadow-md rounded-lg p-4 mb-8 space-y-4">
-        {usuarios.map((usuario: Usuario) => (
+        {filteredUsuarios.map((usuario: Usuario) => (
           <li key={usuario.id} className="p-4 border-b border-gray-700">
             <div className="mb-2">
               <span className="font-semibold">Nome:</span> {usuario.usuario}
